@@ -1,5 +1,5 @@
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QPushButton, QAction, QLineEdit, QMessageBox
+from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QPushButton, QAction, QLineEdit, QMessageBox,QDialog
 from PyQt5.QtWidgets import *
 from PyQt5 import QtGui
 from PyQt5 import QtCore
@@ -11,12 +11,23 @@ from PyQt5.QtCore import *
 import sys
 from PyQt5.QtGui import QMovie
 from PyQt5.QtCore import Qt
+import pyttsx3
+import datetime
+
+
+engine=pyttsx3.init('sapi5')
+voices=engine.getProperty('voices')
+engine.setProperty("voice",voices[0].id)
 
 
 
+def speak(audio):
+    engine.say(audio)
+    engine.runAndWait()
 
 
-class Uibot(object):
+class Uibot():
+
     def __init__(self):
         self.human=False
         self.ms_list=[[None,False] for i in range(7) ]
@@ -24,6 +35,7 @@ class Uibot(object):
         self.humanimg=QPixmap('human.jpg')
         self.bot_img=self.botimg.scaled(21,21)
         self.human_img=self.humanimg.scaled(21,21)
+
 
     def Main(self):
 
@@ -35,7 +47,7 @@ class Uibot(object):
 
 
         self.textbox=QLineEdit(self.win)
-        self.textbox.move(30,550)
+        self.textbox.move(35,550)
         self.textbox.resize(300,25)
         self.textbox.setPlaceholderText("Type here")
         self.textbox.setStyleSheet(u"QLineEdit {\n"
@@ -51,7 +63,7 @@ class Uibot(object):
         self.pb.resize(40,25)
         self.pb.setText("Send")
         self.pb.setStyleSheet(u"QPushButton {\n"
-                                    "    border: 2px Blue;\n"
+                                    "    border: 2px #040808;\n"
                                     "    border-radius: 10px;\n"
                                     "    padding: 0 8px;\n"
                                     "    background: Cyan ;\n"
@@ -59,8 +71,14 @@ class Uibot(object):
 
         self.pb.clicked.connect(self.clickme)
 
-
-
+        self.voice =QPushButton(self.win)
+        self.voice.move(5,547)
+        self.voice.resize(21,26)
+        self.voice.setStyleSheet(u"QPushButton {\n"
+                                    "    border: 2px Blue;\n"
+                                    "    border-radius: 10px;\n"
+                                    "    background-image:url(mic.jpg)  ;\n"
+                                    "}")
 
         self.verticalLayoutWidget = QWidget(self.win)
         self.verticalLayoutWidget.setObjectName(u"verticalLayoutWidget")
@@ -75,11 +93,15 @@ class Uibot(object):
         self.frame.setFrameShadow(QFrame.Raised)
 
 
+
+
         self.frame_2 = QFrame(self.verticalLayoutWidget)
         self.frame_2.setObjectName(u"frame_2")
         self.frame_2.setGeometry(QRect(-10, 320, 391, 61))
         self.frame_2.setFrameShape(QFrame.StyledPanel)
         self.frame_2.setFrameShadow(QFrame.Raised)
+
+
 
 
         self.label_20 = QLabel(self.frame_2)
@@ -177,6 +199,21 @@ class Uibot(object):
 
 
         self.verticalLayout.addWidget(self.frame)
+
+
+        self.status_label = QLabel(self.frame_7)
+        self.status_label.setObjectName(u"label_status")
+        self.status_label.setGeometry(QRect(110, 30, 200, 20))
+        self.status_label.setStyleSheet(u"QLabel{  \n"
+                                            "\n"
+                                            "  border: 1px grey;\n"
+                                            "    border-radius: 4px;\n"
+                                            "    padding: 0 4px;\n"
+                                            "    background: grey;\n"
+                                            "    selection-background-color: darkgray;\n"
+                                            "\n"
+                                            "}")
+        self.status_label.setText("Status:- Idle")
 
 
 
@@ -388,6 +425,8 @@ class Uibot(object):
                                             "\n"
                                             "}")
 
+    def status_bot(self):
+        pass
 
     def addtochat(self,text):
         self.human=True
@@ -407,9 +446,22 @@ class Uibot(object):
 
     def botsay(self):
         lenth = len(self.ms_list)
-        if self.ms_list[lenth - 1][0] != " ":
-            self.bottochat("Hello Friend")
-
+        if self.ms_list[lenth - 1][0] == "Hello" or "hello":
+            self.bottochat("Hello Sir")
+            speak("Hello Sir")
+    def WishMe(self):
+        hour=int(datetime.datetime.now().hour)
+        if hour>=0 and hour<12:
+            speak("good morning")
+            self.bottocha("good morning")
+        elif hour>=12 and hour<18:
+            speak("good afternoon")
+            self.bottochat("good afternoon   "  )
+        else:
+            speak("good Evening")
+            self.bottochat("good Evening    ")
+        speak("  I am Bajirao sir . Please tell me how may I help you ? ")
+        self.bottochat(" I am Bajirao sir . Please tell me how may I help you ?   ")
 
 
 
@@ -418,6 +470,7 @@ if __name__ == '__main__':
     app=QApplication(sys.argv)
     ob=Uibot()
     ob.Main()
+    ob.WishMe()
 
 
     sys.exit(app.exec_())
